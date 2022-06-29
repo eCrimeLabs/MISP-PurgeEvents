@@ -36,7 +36,7 @@ Execution time **12m11.239s**
 ## Dependencies
 It is recommended to create a virtual environment for the packages - **python 3.8 or higher** required.
 
-Example for creating the virtual environment, can be executed from within the "MISP-PurgeOldEvents" folder
+Example for creating the virtual environment, can be executed from within the "MISP-PurgeEvents" folder
 ```
 # python3 -m venv venv
 ```
@@ -74,10 +74,10 @@ exclude_orgs = [
 
 **Help Menu:**
  ```
- $ venv/bin/python misp-purgeoldevents.py -h
+ $ venv/bin/python misp-purgeevents.py -h
 
  eCrimeLabs MISP Purge Old Events tool
- usage: misp-purgeoldevents.py [-h] [-f FIRST] [-l LAST] [-d] [-v] [-b] [-o ORGUUID] [--force]
+ usage: misp-purgeevents.py [-h] [-f FIRST] [-l LAST] [-d] [-v] [-b] [-o ORGUUID] [--force]
 
  optional arguments:
    -h, --help            show this help message and exit
@@ -97,7 +97,7 @@ exclude_orgs = [
 
 Delete all events between 2010-01-01 and 2022-12-12, excluding events created by Org UUID 569b6c1f-bd1c-49c8-9244-0484bce2ab96
  ```
- $ venv/bin/python misp-purgeoldevents.py -f 2010-01-01 -l 2022-12-12 -v --dryrun
+ $ venv/bin/python misp-purgeevents.py -f 2010-01-01 -l 2022-12-12 -v --dryrun
  eCrimeLabs MISP Purge Old Events tool
   - Find all events for deletion between: 2010-01-01 and 2022-12-12
   - 1 fixed events for exclusion from Feeds
@@ -110,7 +110,7 @@ Delete all events between 2010-01-01 and 2022-12-12, excluding events created by
 
 Delete all events between 2010-01-01 and 2022-12-12, only events created by Organization UUID a40ea2c0-ff84-44ad-a936-7b1f5ab9725f
 ```
-$ venv/bin/python misp-purgeoldevents.py -f 2010-01-01 -l 2022-12-12 -v -o a40ea2c0-ff84-44ad-a936-7b1f5ab9725f --dryrun
+$ venv/bin/python misp-purgeevents.py -f 2010-01-01 -l 2022-12-12 -v -o a40ea2c0-ff84-44ad-a936-7b1f5ab9725f --dryrun
 eCrimeLabs MISP Purge Old Events tool
  - Find events from organization a40ea2c0-ff84-44ad-a936-7b1f5ab9725f for deletion between: 2010-01-01 and 2022-12-12
  - 1 fixed events for exclusion from Feeds
@@ -128,7 +128,7 @@ eCrimeLabs MISP Purge Old Events tool
 
 In some cases you need to do tests where you create events and delete these and looping that task, so you want to remove blocklisted events between 2010-01-01 and 2022-12-12
 ```
-$ venv/bin/python misp-purgeoldevents.py -f 2010-01-01 -l 2022-12-12 --blocklist --dryrun
+$ venv/bin/python misp-purgeevents.py -f 2010-01-01 -l 2022-12-12 --blocklist --dryrun
 eCrimeLabs MISP Purge Old Events tool
  - Find Blocklisted events for deletion between: 2010-01-01 and 2022-12-12
  - 1 fixed events for exclusion from Feeds
