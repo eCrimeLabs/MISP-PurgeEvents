@@ -7,7 +7,7 @@ Created by Dennis Rand [(@DennisRand)](https://twitter.com/dennisrand) - Company
 ## Detailed Description
 In various cases it would be useful to expire/purge older events, cleanup blocklist or delete events from a specific organization.
 
-The MISP-PurgeOldEvent tool can assist in various cleaning operations
+The MISP-PurgeEvent tool can assist in various cleaning operations
 
 The tool supports exclusions on Organizations from purge, and also Feeds with fixed event will be excluded per default.  
 
@@ -102,7 +102,7 @@ Delete all events between 2010-01-01 and 2022-12-12, excluding events created by
   - Find all events for deletion between: 2010-01-01 and 2022-12-12
   - 1 fixed events for exclusion from Feeds
    - Searching events in MISP between 2010-01-01 and 2022-12-12
-   - 15 events exluded based on OrgC UUID's
+   - 15 events excluded based on OrgC UUID's
    - Excluded OrgC UUID(s):
     + OrgC UUID: 569b6c1f-bd1c-49c8-9244-0484bce2ab96
    - 9341 events identified and up for deletion, splitting into chunks of 200
@@ -115,7 +115,7 @@ eCrimeLabs MISP Purge Old Events tool
  - Find events from organization a40ea2c0-ff84-44ad-a936-7b1f5ab9725f for deletion between: 2010-01-01 and 2022-12-12
  - 1 fixed events for exclusion from Feeds
   - Searching events in MISP between 2010-01-01 and 2022-12-12
-  - 0 events exluded based on OrgC UUID's
+  - 0 events excluded based on OrgC UUID's
   - Excluded OrgC UUID(s):
    + OrgC UUID: 1cb16c82-c808-4342-a874-60574c9c4df9
    + OrgC UUID: 569b6c1f-bd1c-49c8-9244-0484bce2ab96

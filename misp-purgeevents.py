@@ -146,9 +146,9 @@ def search_misp_events(misp, time_list, exclude_event_ids, orguuid):
             org_counter = org_counter + 1
     if (verbose or dryrun):
         if(is_valid_uuid(orguuid)):
-            print ("  - 0 events exluded based on OrgC UUID's")
+            print ("  - 0 events excluded based on OrgC UUID's")
         else:
-            print ("  - " + str(org_counter) + " events exluded based on OrgC UUID's")
+            print ("  - " + str(org_counter) + " events excluded based on OrgC UUID's")
         if (verbose):
             print ("  - Excluded OrgC UUID(s):")
             for exclude_org in exclude_orgs:
