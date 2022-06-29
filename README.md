@@ -1,4 +1,4 @@
-# MISP Purge old events
+# eCrimeLabs MISP Purge Events tool
 
 A python script to perform cleanup of old or unwanted events, including Blacklisted Events
 
