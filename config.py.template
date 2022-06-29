@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+misp_url='https://<MISP DOMAIN>'
+misp_key='<MISP KEY>'
+misp_verifycert=True
+
+# chunk_size is how many events to delete at a time.
+chunk_size = 200
+
+# Organization UUID's to exclude from deletion, typically you add your own organization.
+exclude_orgs = [
+    '1cb16c82-c808-4342-a874-60574c9c4df9',
+    '569b6c1f-bd1c-49c8-9244-0484bce2ab96'
+]
