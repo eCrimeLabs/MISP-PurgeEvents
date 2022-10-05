@@ -165,7 +165,7 @@ def delete_misp_events(misp, event_db):
         app_json = json.dumps(bulk)
         url = misp_url + '/events/delete'
         try:
-            x = requests.post(url, data=app_json, headers={"Content-Type":"application/json", "Accept":"application/json", "Authorization": misp_key }, timeout=60)
+            x = requests.post(url, data=app_json, headers={"Content-Type":"application/json", "Accept":"application/json", "Authorization": misp_key }, timeout=60, verify=misp_verifycert)
             cntSuccess = len(event_db)
         except:
             cntFailed = len(event_db)
