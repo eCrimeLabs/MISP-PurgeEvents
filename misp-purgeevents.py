@@ -235,7 +235,7 @@ def perform_task(first, last, blocklisted, force, orguuid):
                     elif (loop_sleep == 10):
                         loop_sleep = 0
                         if (force == False):
-                            print ("    - Sleeping 120 seconds - To give database time to recover and cleanup - when more than 500+ events is to be deleted")
+                            print ("    - Sleeping 120 seconds - To give database time to recover and cleanup - when another chunk of <={} events will be deleted".format(chunk_size*10))
                             time.sleep(120)
                     elif (failed_attempts > 3):
                         print ("- Multiple failed concurrent attempts... Exiting")
