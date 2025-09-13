@@ -26,7 +26,7 @@ from config import misp_url, misp_key, misp_verifycert, exclude_orgs, chunk_size
 verbose = False
 dryrun = False
 blocklisted = False
-version = '0.1'
+version = '0.1.1'
 
 def handler(signum, frame):
     print ("")
@@ -114,15 +114,19 @@ def search_and_delete_blocklist_events(misp, earliest, latest):
 
 
 
-def search_misp_events(misp, time_list, exclude_event_ids, orguuid):
+def search_misp_events(misp, time_list, exclude_event_ids, orguuid, include_unpublished):
     global dryrun, verbose, exclude_orgs
     print ("  - Searching events in MISP between " + time_list[0] + " and " + time_list[1])
     search_template = {
-        "published": "1",
         "minimal": "1",
+        "datefrom": time_list[0],
+        "dateuntil": time_list[1],
     }
-    search_template['datefrom'] = time_list[0]
-    search_template['dateuntil'] = time_list[1]
+    if not include_unpublished:
+        search_template["published"] = "1"
+
+    if is_valid_uuid(orguuid):
+        search_template["org"] = orguuid
 
     events = []
     org_counter = 0
@@ -171,7 +175,7 @@ def delete_misp_events(misp, event_db):
             cntFailed = len(event_db)
     return(cntSuccess,cntFailed)
 
-def perform_task(first, last, blocklisted, force, orguuid):
+def perform_task(first, last, blocklisted, force, orguuid, include_unpublished):
     global dryrun, verbose, split_freq, chunk_size
     cntSuccessSum = 0
     cntFailedSum = 0
@@ -203,7 +207,7 @@ def perform_task(first, last, blocklisted, force, orguuid):
             print (" - Result: " + str(cntSuccess) + " blocklisted events deleted, and " + str(cntFailed) + " Failed")
         else:
             time_list = [str(first), str(last)]
-            event_db = search_misp_events(misp, time_list, exclude_event_ids, orguuid)
+            event_db = search_misp_events(misp, time_list, exclude_event_ids, orguuid, include_unpublished)
             if (len(event_db) < chunk_size):
                 print("  - " + str(len(event_db)) + " events identified and up for deletion")
             else:
@@ -257,6 +261,7 @@ def main():
     parser.add_argument("-v", "--verbose", default=False, action='store_true', help="Will output a list of the event UUID deleted, while running")
     parser.add_argument("-b", "--blocklist", default=False, action='store_true', help="The purge will be done towards events listed in the BlockListed Events")
     parser.add_argument("-o", "--orguuid", type=str, help="Specify a specific organization UUID to perform purge on - Format: 123e4567-e89b-12d3-a456-426614174000")
+    parser.add_argument("--include-unpublished", default=False, action="store_true", help="Include unpublished events in the purge. If this is not set, only published events are considered.")
     parser.add_argument("--force", default=False, action='store_true', help="The purge will performed, without asking for confirmation [WARNING - DELETION WILL BE DONE]")
 
     args = parser.parse_args()
@@ -265,6 +270,7 @@ def main():
     blocklisted = args.blocklist
     force = args.force
     orguuid = ""
+    include_unpublished = args.include_unpublished
 
     if not (valid_date(args.first)):
         print(" - First seen date seen date (" + args.first + ") has incorrect date string format. It should be YYYY-MM-DD")
@@ -288,7 +294,7 @@ def main():
         else:
             print(" - Find all events for deletion between: " + args.first + " and " + args.last)
 
-    perform_task(args.first, args.last, blocklisted, force, orguuid)
+    perform_task(args.first, args.last, blocklisted, force, orguuid, include_unpublished)
     if (dryrun):
         print (" - Simulated Purge Completed")
     else:

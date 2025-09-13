@@ -77,7 +77,7 @@ exclude_orgs = [
  $ venv/bin/python misp-purgeevents.py -h
 
  eCrimeLabs MISP Purge Old Events tool
- usage: misp-purgeevents.py [-h] [-f FIRST] [-l LAST] [-d] [-v] [-b] [-o ORGUUID] [--force]
+ usage: misp-purgeevents.py [-h] [-f FIRST] [-l LAST] [-d] [-v] [-b] [-o ORGUUID] [--include-unpublished] [--force]
 
  optional arguments:
    -h, --help            show this help message and exit
@@ -89,6 +89,8 @@ exclude_orgs = [
    -b, --blocklist       The purge will be done towards events listed in the BlockListed Events
    -o ORGUUID, --orguuid ORGUUID
                          Specify a specific organization UUID to perform purge on - Format: 123e4567-e89b-12d3-a456-426614174000
+    --include-unpublished
+                         Include unpublished events in the purge. If this is not set, only published events are considered.
    --force               The purge will performed, without asking for confirmation [WARNING - DELETION WILL BE DONE]
  ```
 
