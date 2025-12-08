@@ -17,7 +17,6 @@ import time
 import signal
 import requests
 import uuid
-import os
 from tendo import singleton
 from pymisp import ExpandedPyMISP
 from pymisp import PyMISP
