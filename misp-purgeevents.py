@@ -111,8 +111,18 @@ def search_and_delete_blocklist_events(misp, earliest, latest):
                     cntSuccess = cntSuccess + 1
     return(cntSuccess,cntFailed)
 
+def get_proxy_settings(proxy_url):
+    """
+    Sets up the proxy for requests (and thus PyMISP).
+    """
+    proxies = {}
 
-
+    if proxy_url:
+        proxies = {
+            'http': proxy_url,
+            'https': proxy_url
+        }
+    return proxies
 
 def search_misp_events(misp, time_list, exclude_event_ids, orguuid, include_unpublished):
     global dryrun, verbose, exclude_orgs
@@ -175,12 +185,18 @@ def delete_misp_events(misp, event_db):
             cntFailed = len(event_db)
     return(cntSuccess,cntFailed)
 
-def perform_task(first, last, blocklisted, force, orguuid, include_unpublished):
+def perform_task(first, last, blocklisted, force, orguuid, include_unpublished, proxy):
     global dryrun, verbose, split_freq, chunk_size
     cntSuccessSum = 0
     cntFailedSum = 0
     me = singleton.SingleInstance() # will sys.exit(-1) if other instance is running
     delete_data = False
+    proxies = {}
+
+    # Set SOCKS proxy if provided
+    if proxy:
+        proxies = get_proxy_settings(proxy)
+
     if (force == False and dryrun == False):
         answer = input(" - Continue data deletion in MISP (answer: YES to continue)?")
         if answer.upper() in ["Y", "YES"]:
@@ -194,7 +210,8 @@ def perform_task(first, last, blocklisted, force, orguuid, include_unpublished):
 
     if (delete_data):
         signal.signal(signal.SIGINT, handler)
-        misp = ExpandedPyMISP(misp_url, misp_key, misp_verifycert)
+        misp = ExpandedPyMISP(misp_url, misp_key, misp_verifycert, proxies=proxies)
+        
         exclude_event_ids = get_active_lists_fixed_id(misp)
 
         formatted_earliest_date = time.strptime(first, "%Y-%m-%d")
@@ -262,6 +279,7 @@ def main():
     parser.add_argument("-b", "--blocklist", default=False, action='store_true', help="The purge will be done towards events listed in the BlockListed Events")
     parser.add_argument("-o", "--orguuid", type=str, help="Specify a specific organization UUID to perform purge on - Format: 123e4567-e89b-12d3-a456-426614174000")
     parser.add_argument("--include-unpublished", default=False, action="store_true", help="Include unpublished events in the purge. If this is not set, only published events are considered.")
+    parser.add_argument("-p", "--proxy", type=str, help="Use a HTTP or SOCKS5 proxy for the connection to MISP")
     parser.add_argument("--force", default=False, action='store_true', help="The purge will performed, without asking for confirmation [WARNING - DELETION WILL BE DONE]")
 
     args = parser.parse_args()
@@ -269,6 +287,7 @@ def main():
     dryrun = args.dryrun
     blocklisted = args.blocklist
     force = args.force
+    proxy = args.proxy
     orguuid = ""
     include_unpublished = args.include_unpublished
 
@@ -294,7 +313,7 @@ def main():
         else:
             print(" - Find all events for deletion between: " + args.first + " and " + args.last)
 
-    perform_task(args.first, args.last, blocklisted, force, orguuid, include_unpublished)
+    perform_task(args.first, args.last, blocklisted, force, orguuid, include_unpublished, proxy)
     if (dryrun):
         print (" - Simulated Purge Completed")
     else:
