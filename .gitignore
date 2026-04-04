@@ -131,3 +131,4 @@ dmypy.json
 config.py
 test.py
 CLAUDE.md
+.vscode/settings.json
