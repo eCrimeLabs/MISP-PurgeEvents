@@ -19,6 +19,7 @@ import uuid
 from tendo import singleton
 from pymisp import PyMISP
 from collections import defaultdict
+from tqdm import tqdm
 from config import misp_url, misp_key, misp_verifycert, exclude_orgs, chunk_size
 
 verbose = False
@@ -84,7 +85,7 @@ def search_and_delete_blocklist_events(misp, earliest, latest):
     print (" - Searching and deleting blocklisted events in MISP based event date (NOTICE: This can take some time)")
     try:
         response_lists = misp.event_blocklists()
-    except:
+    except Exception:
         print (" - An Error occoured in search for events")
         sys.exit(1)
     if (verbose):
@@ -135,7 +136,7 @@ def search_misp_events(misp, time_list, exclude_event_ids, orguuid, include_unpu
     org_counter = 0
     try:
         response_lists = misp.direct_call('/events/index', search_template)
-    except:
+    except Exception:
         print (" - An Error occoured in search for events")
         sys.exit(1)
     for response in response_lists:
@@ -174,7 +175,7 @@ def delete_misp_events(misp, event_db):
         try:
             x = requests.post(url, data=app_json, headers={"Content-Type":"application/json", "Accept":"application/json", "Authorization": misp_key }, timeout=60, verify=misp_verifycert)
             cntSuccess = len(event_db)
-        except:
+        except Exception:
             cntFailed = len(event_db)
     return(cntSuccess,cntFailed)
 
@@ -225,13 +226,20 @@ def perform_task(first, last, blocklisted, force, orguuid, include_unpublished):
                 for i in range(0, len(event_db), chunk_size):
                     chunked_list.append(event_db[i:i+chunk_size])
 
-                for event_db in chunked_list:
+                if verbose:
+                    chunk_iter = chunked_list
+                else:
+                    chunk_iter = tqdm(chunked_list, desc="  - Deleting events", unit="chunk", total=len(chunked_list))
+
+                for event_db in chunk_iter:
                     failed_attempts = 0
                     cntSuccess, cntFailed = delete_misp_events(misp, event_db)
                     cntSuccessSum = cntSuccessSum + cntSuccess
                     cntFailedSum = cntFailedSum + cntFailed
-                    if(verbose):
+                    if verbose:
                         print ("    - Result: " + str(cntSuccess) + " event(s) deleted, and " + str(cntFailed) + " Failed")
+                    else:
+                        chunk_iter.set_postfix(deleted=cntSuccessSum, failed=cntFailedSum)
                     loop_sleep = loop_sleep + 1
                     if (cntFailed >= 1):
                         loop_sleep = 0

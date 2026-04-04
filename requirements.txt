@@ -4,3 +4,4 @@ argparse
 arrow
 tendo
 uuid
+tqdm

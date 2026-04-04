@@ -1,4 +1,4 @@
-# MISP-PurgeEvents — Project Guide
+# MISP-PurgeEvents — Project Guide 
 
 ## Overview
 A Python 3 CLI tool for cleaning up old or unwanted events from a MISP (Malware Information Sharing Platform) instance. It supports date-range-based deletion, blocklist purging, per-organization filtering, dry-run simulation, and chunked bulk deletion to avoid MISP database instability.
