@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 #
 # Created by Dennis Rand
-# eCrimeLabs ApS
 # https://www.ecrimelabs.com
 #
 
@@ -18,7 +17,6 @@ import signal
 import requests
 import uuid
 from tendo import singleton
-from pymisp import ExpandedPyMISP
 from pymisp import PyMISP
 from collections import defaultdict
 from config import misp_url, misp_key, misp_verifycert, exclude_orgs, chunk_size
@@ -26,13 +24,18 @@ from config import misp_url, misp_key, misp_verifycert, exclude_orgs, chunk_size
 verbose = False
 dryrun = False
 blocklisted = False
-version = '0.1.1'
+version = '0.1.2'
 
 def handler(signum, frame):
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
     print ("")
-    res = input("Ctrl-c was pressed. Do you really want to exit? y/n ")
-    if res == 'y':
+    try:
+        res = input("Ctrl-c was pressed. Do you really want to exit? y/n ")
+    except (EOFError, KeyboardInterrupt):
+        res = 'y'
+    if res.strip().lower() == 'y':
         sys.exit(1)
+    signal.signal(signal.SIGINT, handler)
 
 def is_valid_uuid(val):
     try:
@@ -45,7 +48,7 @@ def timestamp_today():
     return(datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d"))
 
 def timestamp_yesterday():
-    today = datetime.datetime.utcnow().date()
+    today = datetime.datetime.now(datetime.timezone.utc).date()
     yesterday = today - datetime.timedelta(days=1)
     return(str(yesterday))
 
@@ -194,7 +197,7 @@ def perform_task(first, last, blocklisted, force, orguuid, include_unpublished):
 
     if (delete_data):
         signal.signal(signal.SIGINT, handler)
-        misp = ExpandedPyMISP(misp_url, misp_key, misp_verifycert)
+        misp = PyMISP(misp_url, misp_key, misp_verifycert)
         exclude_event_ids = get_active_lists_fixed_id(misp)
 
         formatted_earliest_date = time.strptime(first, "%Y-%m-%d")
@@ -254,6 +257,7 @@ def main():
     global dryrun, verbose, blocklisted
 
     print ("eCrimeLabs MISP Purge Events tool v." + str(version))
+    print (f" - MISP Instance: {misp_url}")
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--first", type=str, default=timestamp_yesterday(), help="Oldest events to purge - Format: YYYY-MM-DD (Default: " + timestamp_yesterday() + ")")
     parser.add_argument("-l", "--last", type=str, default=timestamp_today(), help="Newest events to purge - Format: YYYY-MM-DD (Default: " + timestamp_today() + ")")
