@@ -13,3 +13,9 @@ exclude_orgs = [
     '1cb16c82-c808-4342-a874-60574c9c4df9',
     '569b6c1f-bd1c-49c8-9244-0484bce2ab96'
 ]
+
+# Proxies configuration if needed 
+proxies = {
+    "http" : '127.0.0.1:8090',
+    "https": '127.0.0.1:8090'
+}
